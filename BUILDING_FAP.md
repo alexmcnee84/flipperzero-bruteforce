@@ -10,32 +10,78 @@ tool because it is lighter than checking out the whole firmware tree manually.
 > dialog on the device explaining where to copy the generated `.sub` files. You can replace the
 > template with a richer application if you want to automate transmissions.
 
-## 1. Install ufbt
+## 1. Prepare the tooling on Windows
 
-```bash
-pipx install ufbt
-```
+The commands below assume you are using **PowerShell** on Windows 10/11.  They also work in the
+classic Command Prompt as long as you remove the `` ` `` line continuation characters.
 
-See the ufbt documentation if you prefer another installation method.
+1. Install [Git for Windows](https://gitforwindows.org/) if it is not already available. With
+   winget you can do:
 
-## 2. Create a workspace
+   ```powershell
+   winget install --id Git.Git -e
+   ```
 
-```bash
-mkdir ~/flipper-workspace
-cd ~/flipper-workspace
+2. Install Python 3.11 or newer with [winget](https://learn.microsoft.com/windows/package-manager/winget/):
+
+   ```powershell
+   winget install --id Python.Python.3.11 -e
+   ```
+
+   Close and reopen the terminal once the installer finishes so that the new `py` launcher is on
+   `PATH`.
+
+3. Install [pipx](https://pypa.github.io/pipx/) so that ufbt and ufbc live in isolated virtual
+   environments:
+
+   ```powershell
+   py -m pip install --user pipx
+   py -m pipx ensurepath
+   ```
+
+   Re-open the terminal after `ensurepath` so the `pipx` shim directory is available.
+
+4. Use pipx to install the Flipper tooling:
+
+   ```powershell
+   pipx install ufbt
+   pipx install ufbc
+   ```
+
+   You can update them later with `pipx upgrade ufbt` and `pipx upgrade ufbc`.
+
+5. (Optional) Verify that the commands are reachable:
+
+   ```powershell
+   ufbt --version
+   ufbc --version
+   ```
+
+## 2. Create a workspace and install the SDK
+
+```powershell
+mkdir $HOME/flipper-workspace
+cd $HOME/flipper-workspace
 ufbt clone
 ```
 
 This downloads the firmware skeleton that the build system requires.
+
+Still inside the workspace run the SDK installer once. The tool downloads the cross-compilation
+toolchain and caches it under your user profile (typically `C:\Users\<you>\AppData\Local\ufbt`):
+
+```powershell
+ufbt sdk install
+```
 
 ## 3. Copy the template app
 
 Inside this repository you will find a small application skeleton in `fap_template/`. Copy its
 content inside the workspace that ufbt created:
 
-```bash
-cp -r /path/to/flipperzero-bruteforce/fap_template/applications_user \
-      ~/flipper-workspace/
+```powershell
+Copy-Item -Path C:\path\to\flipperzero-bruteforce\fap_template\applications_user `
+          -Destination $HOME/flipper-workspace\ -Recurse
 ```
 
 After the copy you should have an `applications_user/bruteforce_bruteforce` directory inside the
@@ -45,9 +91,9 @@ workspace containing `application.fam` and `bruteforce_bruteforce.c`.
 
 Back in this repository run the generator so that you have fresh `.sub` files:
 
-```bash
-cd /path/to/flipperzero-bruteforce
-python3 flipperzero-bruteforce.py
+```powershell
+cd C:\path\to\flipperzero-bruteforce
+py -3 flipperzero-bruteforce.py
 ```
 
 Copy the resulting folders (everything under `sub_files/`) to the SD card image that you normally
@@ -58,8 +104,8 @@ files live, so you are free to organise them as you prefer (for example `SD:/sub
 
 Launch the build inside the ufbt workspace:
 
-```bash
-cd ~/flipper-workspace
+```powershell
+cd $HOME/flipper-workspace
 ufbt fap bruteforce_bruteforce
 ```
 
