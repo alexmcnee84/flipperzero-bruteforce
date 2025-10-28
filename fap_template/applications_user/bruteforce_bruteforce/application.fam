@@ -1,0 +1,9 @@
+App(
+    appid="bruteforce_bruteforce",
+    name="Bruteforce Files",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="bruteforce_bruteforce_app",
+    requires=[FlipperAppFeature.Gui],
+    stack_size=2 * 1024,
+    icon="A_Plugin",
+)

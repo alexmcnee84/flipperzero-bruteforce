@@ -118,6 +118,12 @@ Other attempts we made to shorten the bruteforce were:
 
 Further testing will be performed for the other protocols.
 
+## Packaging the generator as a `.fap`
+
+If you would like to wrap the generated data inside an installable Flipper application, follow the
+guide in [BUILDING_FAP.md](BUILDING_FAP.md). The repository now includes a minimal helper template
+that can be compiled with `ufbt` and bundled with the `.sub` files produced by the Python script.
+
 # Timing
 
 To compute the time it takes to perform a bruteforce attack, we need to sum the time it takes to send each code:
